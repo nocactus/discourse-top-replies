@@ -1,9 +1,31 @@
-// ── Gedeeld (standaard Discourse + Reddit theme) ───────────────────────────
+// ── Reddit-ish theme: replies zitten in dezelfde <tr> als de kaart ─────────
+// Verwijder de onderste border en radius van de kaart als er replies zijn,
+// zodat kaart + replies één doorlopend geheel vormen.
 
-.top-replies-list {
+.topic-list-item:has(.top-replies) {
+  .custom-topic-layout {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+  }
+
+  .top-replies {
+    background: var(--secondary);
+    border: 1px solid var(--redditish-border-color);
+    border-top: none;
+    border-radius: 0 0 0.25em 0.25em;
+    padding: 0 0.75em 0.75em;
+  }
+}
+
+// ── Replies layout ──────────────────────────────────────────────────────────
+
+.top-replies {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--primary-very-low);
 }
 
 .top-reply-item {
@@ -63,47 +85,6 @@
   align-self: center;
   font-size: 0.8em;
   color: var(--love);
-}
-
-// Standaard Discourse (tabel layout)
-.top-replies-cell {
-  border-top: none !important;
-  padding: 0 0 8px !important;
-}
-
-// ── Reddit-ish theme (flex tbody) ──────────────────────────────────────────
-
-.topic-list tbody {
-  // Kaart boven replies: verwijder onderste hoeken en onderste border
-  // zodat de kaart en replies naadloos één geheel vormen
-  tr.topic-list-item:has(+ tr .top-replies-cell) {
-    .custom-topic-layout {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      border-bottom: none;
-    }
-  }
-
-  // Replies rij: annuleer de flex gap en plak aan de kaart vast
-  tr:has(.top-replies-cell) {
-    margin-top: -1em;
-
-    .top-replies-cell {
-      box-sizing: border-box;
-      display: block;
-      width: 100%;
-      background: var(--secondary);
-      border: 1px solid var(--redditish-border-color);
-      border-top: none;
-      border-radius: 0 0 0.25em 0.25em;
-      padding: 0 0.75em 0.75em !important;
-    }
-
-    .top-replies-list {
-      border-top: 1px solid var(--primary-very-low);
-      padding-top: 8px;
-    }
-  }
 }
 
 @media (max-width: 767px) {
