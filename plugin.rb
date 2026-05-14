@@ -6,9 +6,12 @@
 # authors: Timo
 # url: https://github.com/nocactus/discourse-top-replies
 
+enabled_site_setting :discourse_top_replies_enabled
+
 after_initialize do
   TopicList.on_preload do |topics, topic_list|
     next if topics.empty?
+    next unless SiteSetting.discourse_top_replies_enabled
 
     topic_ids = topics.map(&:id)
 
@@ -16,6 +19,7 @@ after_initialize do
       Post
         .where(topic_id: topic_ids)
         .where("post_number > 1")
+        .where("like_count > 0")
         .where(deleted_at: nil)
         .where(post_type: Post.types[:regular])
         .order(like_count: :desc, post_number: :asc)
