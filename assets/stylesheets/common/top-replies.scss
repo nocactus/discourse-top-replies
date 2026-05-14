@@ -1,14 +1,9 @@
-// Standard Discourse: replies row sits inside a table
-.top-replies-cell {
-  border-top: none !important;
-  padding: 0 0 8px !important;
-}
+// ── Gedeeld (standaard Discourse + Reddit theme) ───────────────────────────
 
 .top-replies-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 0 12px;
 }
 
 .top-reply-item {
@@ -70,18 +65,43 @@
   color: var(--love);
 }
 
-// Reddit-ish theme: tbody is display:flex with gap:1em between rows.
-// Pull the replies row up to close the gap and visually attach to the card above.
+// Standaard Discourse (tabel layout)
+.top-replies-cell {
+  border-top: none !important;
+  padding: 0 0 8px !important;
+}
+
+// ── Reddit-ish theme (flex tbody) ──────────────────────────────────────────
+
 .topic-list tbody {
-  tr.topic-list-item + tr:has(.top-replies-cell) {
-    margin-top: calc(-1em - 2px);
+  // Kaart boven replies: verwijder onderste hoeken en onderste border
+  // zodat de kaart en replies naadloos één geheel vormen
+  tr.topic-list-item:has(+ tr .top-replies-cell) {
+    .custom-topic-layout {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom: none;
+    }
+  }
+
+  // Replies rij: annuleer de flex gap en plak aan de kaart vast
+  tr:has(.top-replies-cell) {
+    margin-top: -1em;
 
     .top-replies-cell {
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
       background: var(--secondary);
-      border: 1px solid var(--primary-low);
+      border: 1px solid var(--redditish-border-color);
       border-top: none;
-      border-radius: 0 0 6px 6px;
-      padding: 8px 12px 12px !important;
+      border-radius: 0 0 0.25em 0.25em;
+      padding: 0 0.75em 0.75em !important;
+    }
+
+    .top-replies-list {
+      border-top: 1px solid var(--primary-very-low);
+      padding-top: 8px;
     }
   }
 }
