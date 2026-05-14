@@ -19,19 +19,29 @@ export default class TopReplies extends Component {
     if (!ourRow) {
       return;
     }
+
     let prev = ourRow.previousElementSibling;
     while (prev && !prev.matches("tr.topic-list-item")) {
       prev = prev.previousElementSibling;
     }
-    if (prev) {
-      prev.classList.add("has-top-replies");
+    if (!prev) {
+      return;
+    }
+
+    prev.classList.add("has-top-replies");
+
+    const card = prev.querySelector(".custom-topic-layout");
+    if (card) {
+      card.style.setProperty("border-bottom-left-radius", "0", "important");
+      card.style.setProperty("border-bottom-right-radius", "0", "important");
+      card.style.setProperty("border-bottom-color", "transparent", "important");
     }
   }
 
   <template>
     {{#if this.siteSettings.discourse_top_replies_enabled}}
       {{#if @outletArgs.topic.top_liked_replies.length}}
-        <tr class="top-replies-row" style="margin-top: -1em">
+        <tr class="top-replies-row" style="display: block; margin-top: -1em">
           <td
             class="top-replies-cell"
             colspan="7"

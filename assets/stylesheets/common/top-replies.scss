@@ -10,8 +10,8 @@
     }
 
     tr.top-replies-row {
-      // inline style="margin-top: -1em" op de <tr> doet hetzelfde;
-      // deze regel is de CSS-fallback
+      // display: block maakt margin-top effectief (table-row negeert margin)
+      display: block !important;
       margin-top: -1em !important;
 
       td.top-replies-cell {
