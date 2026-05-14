@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # name: discourse-top-replies
-# about: Shows the 3 most liked replies under each topic in the topic list
-# version: 0.1.0
+# about: Shows the first 5 replies under each topic in the topic list
+# version: 0.2.0
 # authors: Timo
 # url: https://github.com/nocactus/discourse-top-replies
 
@@ -15,18 +15,37 @@ after_initialize do
 
     topic_ids = topics.map(&:id)
 
-    posts =
+    # Load all replies for these topics, ordered chronologically
+    all_posts =
       Post
         .where(topic_id: topic_ids)
         .where("post_number > 1")
-        .where("like_count > 0")
         .where(deleted_at: nil)
         .where(post_type: Post.types[:regular])
-        .order(like_count: :desc, post_number: :asc)
-        .select(:id, :topic_id, :post_number, :like_count, :cooked, :user_id)
+        .order(post_number: :asc)
+        .select(:id, :topic_id, :post_number, :like_count, :cooked, :user_id,
+                :reply_to_post_number)
         .includes(:user)
 
-    replies_by_topic = posts.group_by(&:topic_id).transform_values { |p| p.take(3) }
+    # Per topic: take first 5 direct replies; for nested replies use only the first
+    replies_by_topic =
+      all_posts
+        .group_by(&:topic_id)
+        .transform_values do |posts|
+          seen_nested_parent = {}
+          result = []
+          posts.each do |post|
+            nested = post.reply_to_post_number.present? && post.reply_to_post_number > 1
+            if nested
+              parent = post.reply_to_post_number
+              next if seen_nested_parent[parent]
+              seen_nested_parent[parent] = true
+            end
+            result << post
+            break if result.size >= 5
+          end
+          result
+        end
 
     topics.each do |topic|
       topic.instance_variable_set(:@top_liked_replies, replies_by_topic[topic.id] || [])
@@ -39,8 +58,10 @@ after_initialize do
       {
         post_number: post.post_number,
         like_count: post.like_count,
-        excerpt: post.excerpt(150, strip_links: true, strip_images: true),
+        excerpt: post.excerpt(200, strip_links: true, strip_images: true),
         username: post.user&.username,
+        avatar_template: post.user&.avatar_template,
+        reply_to_post_number: post.reply_to_post_number,
       }
     end
   end
