@@ -14,7 +14,7 @@ export default class TopReplies extends Component {
   <template>
     {{#if this.siteSettings.discourse_top_replies_enabled}}
       {{#if @outletArgs.topic.top_liked_replies.length}}
-        <td class="top-replies-cell" colspan="7">
+        <tr class="top-replies-row"><td class="top-replies-cell" colspan="7">
           <div class="top-replies-list">
             {{#each @outletArgs.topic.top_liked_replies as |reply|}}
               <a
@@ -38,7 +38,7 @@ export default class TopReplies extends Component {
               </a>
             {{/each}}
           </div>
-        </td>
+        </td></tr>
       {{/if}}
     {{/if}}
   </template>

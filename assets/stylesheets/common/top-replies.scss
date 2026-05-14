@@ -9,7 +9,7 @@
 .topic-list {
   tbody {
     // Kaart waaronder replies zitten: geen onderste rand/afronding
-    tr.topic-list-item:has(+ tr td.top-replies-cell) {
+    tr.topic-list-item:has(+ tr.top-replies-row) {
       .custom-topic-layout {
         border-bottom-left-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
@@ -18,7 +18,7 @@
     }
 
     // Replies rij: schuif omhoog om de 1em flex-gap op te heffen
-    tr:has(td.top-replies-cell) {
+    tr.top-replies-row {
       margin-top: -1em !important;
 
       td.top-replies-cell {
