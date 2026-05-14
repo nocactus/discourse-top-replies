@@ -1,15 +1,7 @@
-// ── Reddit-ish theme: replies <tr> naast de kaart <tr> in flex tbody ───────
-//
-// Het theme gebruikt: tbody { display: flex; flex-direction: column; gap: 1em }
-// Onze replies zitten in een aparte <tr>. Aanpak:
-// 1. Kaart boven: verwijder onderste border + radius
-// 2. Replies rij: margin-top: -1em heft de flex-gap op; box-shadow
-//    tekent de rand zonder de layout te beïnvloeden.
-
 .topic-list {
   tbody {
-    // Kaart waaronder replies zitten: geen onderste rand/afronding
-    tr.topic-list-item:has(+ tr.top-replies-row) {
+    // JS voegt .has-top-replies toe aan de kaart boven de replies rij
+    tr.topic-list-item.has-top-replies {
       .custom-topic-layout {
         border-bottom-left-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
@@ -17,8 +9,9 @@
       }
     }
 
-    // Replies rij: schuif omhoog om de 1em flex-gap op te heffen
     tr.top-replies-row {
+      // inline style="margin-top: -1em" op de <tr> doet hetzelfde;
+      // deze regel is de CSS-fallback
       margin-top: -1em !important;
 
       td.top-replies-cell {
@@ -26,7 +19,6 @@
         display: block;
         width: 100%;
         background: var(--secondary);
-        // box-shadow ipv border: beïnvloedt de layout niet
         box-shadow:
           -1px 0 0 var(--redditish-border-color),
            1px 0 0 var(--redditish-border-color),
