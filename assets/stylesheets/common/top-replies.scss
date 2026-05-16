@@ -10,7 +10,6 @@
     }
 
     tr.top-replies-row {
-      // display: block maakt margin-top effectief (table-row negeert margin)
       display: block !important;
       margin-top: -1em !important;
 
@@ -25,6 +24,47 @@
            0 1px 0 var(--redditish-border-color);
         border-radius: 0 0 0.25em 0.25em;
         padding: 0 0.75em 0.75em !important;
+      }
+
+      // Hoge specificiteit voor alle kleur- en layout-overrides
+      .top-reply-item {
+        color: var(--primary) !important;
+
+        &.top-reply-nested {
+          margin-left: 2em;
+        }
+
+        &:hover .top-reply-content {
+          background: var(--primary-low);
+        }
+      }
+
+      .top-reply-link {
+        display: block;
+        text-decoration: none !important;
+        color: var(--primary) !important;
+
+        &:hover {
+          color: var(--primary) !important;
+        }
+      }
+
+      .top-reply-username {
+        color: var(--primary) !important;
+      }
+
+      .top-reply-excerpt {
+        color: var(--primary-high) !important;
+      }
+
+      .top-reply-reply-btn {
+        color: var(--primary-medium) !important;
+        text-decoration: none !important;
+
+        &:hover {
+          color: var(--primary) !important;
+          text-decoration: underline !important;
+        }
       }
     }
   }
@@ -41,11 +81,9 @@
 }
 
 .top-reply-item {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: flex-start !important;
+  // flex en avatar-grootte worden via inline style gezet om theme-overrides te verslaan
   gap: 8px;
-  color: var(--primary) !important;
+  color: var(--primary);
 
   &.top-reply-nested {
     margin-left: 2em;
@@ -57,11 +95,8 @@
 }
 
 .top-reply-avatar {
-  width: 25px !important;
-  height: 25px !important;
-  max-width: 25px !important;
-  border-radius: 100%;
-  flex-shrink: 0 !important;
+  // Dimensies en border-radius via inline style op het element
+  flex-shrink: 0;
   object-fit: cover;
   margin-top: 2px;
 }
@@ -77,27 +112,22 @@
 
 .top-reply-link {
   display: block;
-  text-decoration: none !important;
-  color: var(--primary) !important;
-
-  &:hover {
-    color: var(--primary) !important;
-    text-decoration: none !important;
-  }
+  text-decoration: none;
+  color: var(--primary);
 }
 
 .top-reply-username {
   display: block;
   font-size: 0.82em;
   font-weight: 700;
-  color: var(--primary) !important;
+  color: var(--primary);
   margin-bottom: 1px;
 }
 
 .top-reply-excerpt {
   display: -webkit-box;
   font-size: 0.85em;
-  color: var(--primary-high) !important;
+  color: var(--primary-high);
   line-height: 1.4;
   overflow: hidden;
   -webkit-line-clamp: 2;
@@ -111,12 +141,12 @@
 .top-reply-reply-btn {
   font-size: 0.78em;
   font-weight: 600;
-  color: var(--primary-medium) !important;
-  text-decoration: none !important;
+  color: var(--primary-medium);
+  text-decoration: none;
 
   &:hover {
-    color: var(--primary) !important;
-    text-decoration: underline !important;
+    color: var(--primary);
+    text-decoration: underline;
   }
 }
 
@@ -125,16 +155,4 @@
   align-self: center;
   font-size: 0.8em;
   color: var(--love);
-}
-
-@media (max-width: 767px) {
-  .top-reply-avatar {
-    width: 22px !important;
-    height: 22px !important;
-    max-width: 22px !important;
-  }
-
-  .top-reply-content {
-    padding: 5px 10px;
-  }
 }

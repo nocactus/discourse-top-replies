@@ -49,12 +49,16 @@ export default class TopReplies extends Component {
           >
             <div class="top-replies-list">
               {{#each @outletArgs.topic.top_liked_replies as |reply|}}
-                <div class="top-reply-item {{if reply.reply_to_post_number "top-reply-nested"}}">
+                <div
+                  class="top-reply-item {{if reply.reply_to_post_number "top-reply-nested"}}"
+                  style="display:flex;flex-direction:row;align-items:flex-start;gap:8px"
+                >
                   {{#if reply.avatar_template}}
                     <img
                       src={{this.avatarUrl reply.avatar_template}}
                       class="top-reply-avatar"
                       alt={{reply.username}}
+                      style="width:25px;height:25px;max-width:25px;border-radius:100%;flex-shrink:0;object-fit:cover;margin-top:2px"
                     />
                   {{/if}}
                   <div class="top-reply-content">
