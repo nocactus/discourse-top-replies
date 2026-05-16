@@ -65,16 +65,18 @@ export default class TopReplies extends Component {
                     <a
                       href="/t/{{@outletArgs.topic.slug}}/{{@outletArgs.topic.id}}/{{reply.post_number}}"
                       class="top-reply-link"
+                      style="color:var(--primary);text-decoration:none"
                     >
-                      <span class="top-reply-username">
+                      <span class="top-reply-username" style="color:var(--primary)">
                         {{#if reply.reply_to_post_number}}↩ {{/if}}{{reply.username}}
                       </span>
-                      <span class="top-reply-excerpt">{{reply.excerpt}}</span>
+                      <span class="top-reply-excerpt" style="color:var(--primary-high)">{{reply.excerpt}}</span>
                     </a>
                     <div class="top-reply-actions">
                       <a
                         href="/t/{{@outletArgs.topic.slug}}/{{@outletArgs.topic.id}}/{{reply.post_number}}"
                         class="top-reply-reply-btn"
+                        style="color:var(--primary-medium);text-decoration:none;font-size:0.78em;font-weight:600"
                       >Reply</a>
                     </div>
                   </div>

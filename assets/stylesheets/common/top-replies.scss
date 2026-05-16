@@ -31,7 +31,9 @@
         color: var(--primary) !important;
 
         &.top-reply-nested {
-          margin-left: 2em;
+          margin-left: 2em !important;
+          padding-left: 0.5em;
+          border-left: 2px solid var(--primary-low);
         }
 
         &:hover .top-reply-content {
@@ -86,7 +88,9 @@
   color: var(--primary);
 
   &.top-reply-nested {
-    margin-left: 2em;
+    margin-left: 2em !important;
+    padding-left: 0.5em;
+    border-left: 2px solid var(--primary-low);
   }
 
   &:hover .top-reply-content {
