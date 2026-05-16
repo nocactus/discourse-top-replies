@@ -49,10 +49,7 @@ export default class TopReplies extends Component {
           >
             <div class="top-replies-list">
               {{#each @outletArgs.topic.top_liked_replies as |reply|}}
-                <a
-                  href="/t/{{@outletArgs.topic.slug}}/{{@outletArgs.topic.id}}/{{reply.post_number}}"
-                  class="top-reply-item"
-                >
+                <div class="top-reply-item {{if reply.reply_to_post_number "top-reply-nested"}}">
                   {{#if reply.avatar_template}}
                     <img
                       src={{this.avatarUrl reply.avatar_template}}
@@ -61,13 +58,26 @@ export default class TopReplies extends Component {
                     />
                   {{/if}}
                   <div class="top-reply-content">
-                    <span class="top-reply-username">{{reply.username}}</span>
-                    <span class="top-reply-excerpt">{{reply.excerpt}}</span>
+                    <a
+                      href="/t/{{@outletArgs.topic.slug}}/{{@outletArgs.topic.id}}/{{reply.post_number}}"
+                      class="top-reply-link"
+                    >
+                      <span class="top-reply-username">
+                        {{#if reply.reply_to_post_number}}↩ {{/if}}{{reply.username}}
+                      </span>
+                      <span class="top-reply-excerpt">{{reply.excerpt}}</span>
+                    </a>
+                    <div class="top-reply-actions">
+                      <a
+                        href="/t/{{@outletArgs.topic.slug}}/{{@outletArgs.topic.id}}/{{reply.post_number}}"
+                        class="top-reply-reply-btn"
+                      >Reply</a>
+                    </div>
                   </div>
                   {{#if reply.like_count}}
                     <span class="top-reply-likes">♥ {{reply.like_count}}</span>
                   {{/if}}
-                </a>
+                </div>
               {{/each}}
             </div>
           </td>
