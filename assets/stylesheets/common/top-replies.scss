@@ -77,21 +77,22 @@
 .top-replies-like-btn {
   background: none;
   border: none;
+  margin: 0;
   padding: 0;
-  font-size: inherit;
-  color: var(--primary-medium);
+  font: inherit;
+  color: inherit;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25em;
   transition: color 0.15s;
 
   &:hover {
-    color: var(--love);
+    color: var(--tertiary);
   }
 
   &.is-liked {
-    color: var(--love);
+    color: var(--tertiary);
   }
 }
 
