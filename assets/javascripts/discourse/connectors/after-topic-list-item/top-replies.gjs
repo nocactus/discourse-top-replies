@@ -45,10 +45,9 @@ export default class TopReplies extends Component {
       let liked = topic.first_post_user_liked || false;
       let count = topic.first_post_like_count || 0;
 
-      const btn = document.createElement("span");
+      const btn = document.createElement("button");
+      btn.type = "button";
       btn.className = "top-replies-like-btn" + (liked ? " is-liked" : "");
-      btn.setAttribute("role", "button");
-      btn.setAttribute("tabindex", "0");
       btn.innerHTML = `♥ ${count}`;
 
       btn.addEventListener("click", async (e) => {
