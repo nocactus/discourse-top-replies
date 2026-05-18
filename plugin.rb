@@ -2,7 +2,7 @@
 
 # name: discourse-top-replies
 # about: Shows the first 5 replies under each topic in the topic list
-# version: 0.3.8
+# version: 0.4.0
 # authors: Timo
 # url: https://github.com/nocactus/discourse-top-replies
 
@@ -47,27 +47,67 @@ after_initialize do
           result
         end
 
+    # Load first posts for like functionality
+    first_posts = Post
+      .where(topic_id: topic_ids, post_number: 1)
+      .select(:id, :topic_id, :like_count)
+    first_posts_by_topic = first_posts.index_by(&:topic_id)
+
+    # Batch-load current user's likes for first posts
+    current_user = topic_list.current_user
+    liked_ids = Set.new
+    if current_user && first_posts.any?
+      liked_ids = PostAction
+        .where(
+          post_id: first_posts.map(&:id),
+          user_id: current_user.id,
+          post_action_type_id: PostActionType.types[:like]
+        )
+        .where(deleted_at: nil)
+        .pluck(:post_id)
+        .to_set
+    end
+
     topics.each do |topic|
       topic.instance_variable_set(:@top_liked_replies, replies_by_topic[topic.id] || [])
+      first_post = first_posts_by_topic[topic.id]
+      topic.instance_variable_set(:@first_post_id, first_post&.id)
+      topic.instance_variable_set(:@first_post_like_count, first_post&.like_count || 0)
+      topic.instance_variable_set(:@first_post_user_liked, liked_ids.include?(first_post&.id))
     end
   end
 
   add_to_serializer(:topic_list_item, :top_liked_replies) do
     replies = object.instance_variable_get(:@top_liked_replies) || []
     replies.map do |post|
+      cooked = post.cooked.gsub(/<img\b[^>]*\bclass="[^"]*emoji[^"]*"[^>]*\/?>/) do |tag|
+        name = tag.match(/\btitle=":([\w+-]+):"/i)&.captures&.first
+        if name
+          Emoji.lookup_unicode(name) || ":#{name}:"
+        else
+          tag.match(/\balt="([^"]+)"/)&.captures&.first.to_s
+        end
+      end
       {
         post_number: post.post_number,
         like_count: post.like_count,
-        excerpt: begin
-          cooked = post.cooked.gsub(/<img[^>]*class="emoji"[^>]*>/) do |tag|
-            tag.match(/alt="([^"]+)"/)&.captures&.first.to_s
-          end
-          PrettyText.excerpt(cooked, 200, strip_links: true, strip_images: true)
-        end,
+        excerpt: PrettyText.excerpt(cooked, 200, strip_links: true, strip_images: true),
         username: post.user&.username,
         avatar_template: post.user&.avatar_template,
         reply_to_post_number: post.reply_to_post_number,
       }
     end
+  end
+
+  add_to_serializer(:topic_list_item, :first_post_id) do
+    object.instance_variable_get(:@first_post_id)
+  end
+
+  add_to_serializer(:topic_list_item, :first_post_like_count) do
+    object.instance_variable_get(:@first_post_like_count) || 0
+  end
+
+  add_to_serializer(:topic_list_item, :first_post_user_liked) do
+    object.instance_variable_get(:@first_post_user_liked) || false
   end
 end

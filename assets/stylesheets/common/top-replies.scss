@@ -72,6 +72,35 @@
   }
 }
 
+// ── Like bar ────────────────────────────────────────────────────────────────
+
+.top-replies-like-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 6px 0 4px;
+}
+
+.top-replies-like-btn {
+  background: none;
+  border: 1px solid var(--primary-low);
+  border-radius: 1em;
+  padding: 3px 10px;
+  font-size: 0.82em;
+  color: var(--primary-medium);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: var(--love);
+    color: var(--love);
+  }
+
+  &.is-liked {
+    color: var(--love);
+    border-color: var(--love);
+  }
+}
+
 // ── Replies layout ──────────────────────────────────────────────────────────
 
 .top-replies-list {
@@ -111,6 +140,7 @@
   border-radius: 12px;
   padding: 6px 12px;
   min-width: 0;
+  font-size: 0.9em;
   transition: background 0.15s;
 }
 
