@@ -75,12 +75,6 @@
 // ── Like knop in de bottom bar van de kaart ─────────────────────────────────
 
 .top-replies-like-btn {
-  background: none;
-  border: none;
-  margin: 0;
-  padding: 0;
-  font: inherit;
-  color: inherit;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -88,11 +82,11 @@
   transition: color 0.15s;
 
   &:hover {
-    color: var(--tertiary);
+    color: var(--tertiary) !important;
   }
 
   &.is-liked {
-    color: var(--tertiary);
+    color: var(--tertiary) !important;
   }
 }
 
