@@ -1,24 +1,11 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { on } from "@ember/modifier";
 import { service } from "@ember/service";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 
 export default class TopReplies extends Component {
   @service siteSettings;
   @service currentUser;
-
-  @tracked _liked = null;
-  @tracked _likeCount = null;
-
-  get liked() {
-    return this._liked ?? this.args.outletArgs.topic.first_post_user_liked ?? false;
-  }
-
-  get likeCount() {
-    return this._likeCount ?? this.args.outletArgs.topic.first_post_like_count ?? 0;
-  }
 
   avatarUrl(avatarTemplate) {
     if (!avatarTemplate) {
@@ -50,54 +37,73 @@ export default class TopReplies extends Component {
       card.style.setProperty("border-bottom-right-radius", "0", "important");
       card.style.setProperty("border-bottom-color", "transparent", "important");
     }
-  }
 
-  @action
-  async likePost() {
+    // Inject like button into the bottom bar of the topic card
     const topic = this.args.outletArgs.topic;
-    const postId = topic.first_post_id;
-    if (!postId || !this.currentUser) {
-      return;
-    }
+    const bottomBar = prev.querySelector(".custom-topic-layout_bottom-bar");
+    if (bottomBar && topic.first_post_id) {
+      let liked = topic.first_post_user_liked || false;
+      let count = topic.first_post_like_count || 0;
 
-    const csrfToken = document
-      .querySelector('meta[name="csrf-token"]')
-      ?.getAttribute("content");
-    const wasLiked = this.liked;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "top-replies-like-btn" + (liked ? " is-liked" : "");
+      btn.innerHTML = `♥ ${count}`;
 
-    this._liked = !wasLiked;
-    this._likeCount = this.likeCount + (wasLiked ? -1 : 1);
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-    try {
-      let resp;
-      if (wasLiked) {
-        resp = await fetch(
-          `/post_actions/${postId}?post_action_type_id=2&flag_topic=false`,
-          {
-            method: "DELETE",
-            headers: { "X-CSRF-Token": csrfToken },
+        if (!this.currentUser) {
+          return;
+        }
+
+        const csrfToken = document
+          .querySelector('meta[name="csrf-token"]')
+          ?.getAttribute("content");
+        const wasLiked = liked;
+
+        liked = !wasLiked;
+        count = count + (wasLiked ? -1 : 1);
+        btn.innerHTML = `♥ ${count}`;
+        btn.classList.toggle("is-liked", liked);
+
+        try {
+          let resp;
+          if (wasLiked) {
+            resp = await fetch(
+              `/post_actions/${topic.first_post_id}?post_action_type_id=2&flag_topic=false`,
+              {
+                method: "DELETE",
+                headers: { "X-CSRF-Token": csrfToken },
+              }
+            );
+          } else {
+            resp = await fetch("/post_actions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": csrfToken,
+              },
+              body: JSON.stringify({
+                id: topic.first_post_id,
+                post_action_type_id: 2,
+                flag_topic: false,
+              }),
+            });
           }
-        );
-      } else {
-        resp = await fetch("/post_actions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": csrfToken,
-          },
-          body: JSON.stringify({
-            id: postId,
-            post_action_type_id: 2,
-            flag_topic: false,
-          }),
-        });
-      }
-      if (!resp.ok) {
-        throw new Error();
-      }
-    } catch {
-      this._liked = wasLiked;
-      this._likeCount = this.likeCount + (wasLiked ? 1 : -1);
+          if (!resp.ok) {
+            throw new Error();
+          }
+        } catch {
+          liked = wasLiked;
+          count = count + (wasLiked ? 1 : -1);
+          btn.innerHTML = `♥ ${count}`;
+          btn.classList.toggle("is-liked", liked);
+        }
+      });
+
+      bottomBar.appendChild(btn);
     }
   }
 
@@ -110,18 +116,6 @@ export default class TopReplies extends Component {
             colspan="7"
             {{didInsert this.connectToCard}}
           >
-            {{#if @outletArgs.topic.first_post_id}}
-              <div class="top-replies-like-bar">
-                <button
-                  type="button"
-                  class="top-replies-like-btn {{if this.liked "is-liked"}}"
-                  {{on "click" this.likePost}}
-                >
-                  ♥ {{this.likeCount}}
-                </button>
-              </div>
-            {{/if}}
-
             <div class="top-replies-list">
               {{#each @outletArgs.topic.top_liked_replies as |reply|}}
                 <div
