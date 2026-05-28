@@ -74,11 +74,18 @@
 
 // ── Like knop in de bottom bar van de kaart ─────────────────────────────────
 
+// Verberg de niet-aanklikbare like-weergave van het theme; onze knop vervangt 'm
+.topic-list .likes-tlist {
+  display: none !important;
+}
+
 .top-replies-like-btn {
-  background: none;
-  border: none;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
   margin: 0;
-  padding: 0;
+  padding: 0 !important;
   font: inherit;
   color: inherit;
   cursor: pointer;
@@ -88,11 +95,11 @@
   transition: color 0.15s;
 
   &:hover {
-    color: var(--tertiary);
+    color: var(--love);
   }
 
   &.is-liked {
-    color: var(--tertiary);
+    color: var(--love) !important;
   }
 }
 
