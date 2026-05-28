@@ -14,101 +14,116 @@ export default class TopReplies extends Component {
     return avatarTemplate.replace("{size}", "40");
   }
 
-  @action
-  connectToCard(tdElement) {
-    const ourRow = tdElement.closest("tr");
+  topicListItemFor(element) {
+    const ourRow = element.closest("tr");
     if (!ourRow) {
-      return;
+      return null;
     }
-
     let prev = ourRow.previousElementSibling;
     while (prev && !prev.matches("tr.topic-list-item")) {
       prev = prev.previousElementSibling;
     }
+    return prev || null;
+  }
+
+  // Always runs (one hidden hook row per topic), independent of replies.
+  @action
+  attachLikeButton(element) {
+    const prev = this.topicListItemFor(element);
     if (!prev) {
       return;
     }
 
-    prev.classList.add("has-top-replies");
-
-    const card = prev.querySelector(".custom-topic-layout");
-    if (card) {
-      card.style.setProperty("border-bottom-left-radius", "0", "important");
-      card.style.setProperty("border-bottom-right-radius", "0", "important");
-      card.style.setProperty("border-bottom-color", "transparent", "important");
+    const topic = this.args.outletArgs.topic;
+    if (!topic.first_post_id) {
+      return;
     }
 
-    // Inject like button into the bottom bar of the topic card
-    const topic = this.args.outletArgs.topic;
-    const bottomBar = prev.querySelector(".custom-topic-layout_bottom-bar");
-    if (bottomBar && topic.first_post_id) {
-      let liked = topic.first_post_user_liked || false;
-      let count = topic.first_post_like_count || 0;
+    const bottomBar = prev.querySelector(".tli-bottom-section");
+    if (!bottomBar || bottomBar.querySelector(".top-replies-like-btn")) {
+      return;
+    }
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "top-replies-like-btn" + (liked ? " is-liked" : "");
+    let liked = topic.first_post_user_liked || false;
+    let count = topic.first_post_like_count || 0;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "top-replies-like-btn" + (liked ? " is-liked" : "");
+    btn.innerHTML = `♥ ${count}`;
+
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!this.currentUser) {
+        return;
+      }
+
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+      const wasLiked = liked;
+
+      liked = !wasLiked;
+      count = count + (wasLiked ? -1 : 1);
       btn.innerHTML = `♥ ${count}`;
+      btn.classList.toggle("is-liked", liked);
 
-      btn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!this.currentUser) {
-          return;
+      try {
+        let resp;
+        if (wasLiked) {
+          resp = await fetch(
+            `/post_actions/${topic.first_post_id}?post_action_type_id=2&flag_topic=false`,
+            {
+              method: "DELETE",
+              headers: { "X-CSRF-Token": csrfToken },
+            }
+          );
+        } else {
+          resp = await fetch("/post_actions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrfToken,
+            },
+            body: JSON.stringify({
+              id: topic.first_post_id,
+              post_action_type_id: 2,
+              flag_topic: false,
+            }),
+          });
         }
-
-        const csrfToken = document
-          .querySelector('meta[name="csrf-token"]')
-          ?.getAttribute("content");
-        const wasLiked = liked;
-
-        liked = !wasLiked;
-        count = count + (wasLiked ? -1 : 1);
+        if (!resp.ok) {
+          throw new Error();
+        }
+      } catch {
+        liked = wasLiked;
+        count = count + (wasLiked ? 1 : -1);
         btn.innerHTML = `♥ ${count}`;
         btn.classList.toggle("is-liked", liked);
+      }
+    });
 
-        try {
-          let resp;
-          if (wasLiked) {
-            resp = await fetch(
-              `/post_actions/${topic.first_post_id}?post_action_type_id=2&flag_topic=false`,
-              {
-                method: "DELETE",
-                headers: { "X-CSRF-Token": csrfToken },
-              }
-            );
-          } else {
-            resp = await fetch("/post_actions", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": csrfToken,
-              },
-              body: JSON.stringify({
-                id: topic.first_post_id,
-                post_action_type_id: 2,
-                flag_topic: false,
-              }),
-            });
-          }
-          if (!resp.ok) {
-            throw new Error();
-          }
-        } catch {
-          liked = wasLiked;
-          count = count + (wasLiked ? 1 : -1);
-          btn.innerHTML = `♥ ${count}`;
-          btn.classList.toggle("is-liked", liked);
-        }
-      });
+    bottomBar.appendChild(btn);
+  }
 
-      bottomBar.appendChild(btn);
+  // Runs only when a replies row is rendered: visually connect it to the card.
+  @action
+  connectToCard(tdElement) {
+    const prev = this.topicListItemFor(tdElement);
+    if (prev) {
+      prev.classList.add("has-top-replies");
     }
   }
 
   <template>
     {{#if this.siteSettings.discourse_top_replies_enabled}}
+      <tr
+        class="top-replies-like-hook"
+        style="display: none"
+        {{didInsert this.attachLikeButton}}
+      ></tr>
       {{#if @outletArgs.topic.top_liked_replies.length}}
         <tr class="top-replies-row" style="display: block; margin-top: -1em">
           <td

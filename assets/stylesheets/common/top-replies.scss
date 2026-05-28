@@ -1,8 +1,8 @@
 .topic-list {
   tbody {
-    // JS voegt .has-top-replies toe aan de kaart boven de replies rij
+    // JS voegt .has-top-replies toe aan de kaart-rij boven de replies rij
     tr.topic-list-item.has-top-replies {
-      .custom-topic-layout {
+      .main-link {
         border-bottom-left-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
         border-bottom-color: transparent !important;
