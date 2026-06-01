@@ -50,7 +50,7 @@ export default class TopReplies extends Component {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "top-replies-like-btn" + (liked ? " is-liked" : "");
-    btn.innerHTML = `♥ ${count}`;
+    btn.innerHTML = `${count} ♥`;
 
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -67,7 +67,7 @@ export default class TopReplies extends Component {
 
       liked = !wasLiked;
       count = count + (wasLiked ? -1 : 1);
-      btn.innerHTML = `♥ ${count}`;
+      btn.innerHTML = `${count} ♥`;
       btn.classList.toggle("is-liked", liked);
 
       try {
@@ -100,7 +100,7 @@ export default class TopReplies extends Component {
       } catch {
         liked = wasLiked;
         count = count + (wasLiked ? 1 : -1);
-        btn.innerHTML = `♥ ${count}`;
+        btn.innerHTML = `${count} ♥`;
         btn.classList.toggle("is-liked", liked);
       }
     });
