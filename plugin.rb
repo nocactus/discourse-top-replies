@@ -2,11 +2,13 @@
 
 # name: discourse-top-replies
 # about: Shows the first 5 replies under each topic in the topic list
-# version: 0.4.2
+# version: 0.4.3
 # authors: Timo
 # url: https://github.com/nocactus/discourse-top-replies
 
 enabled_site_setting :discourse_top_replies_enabled
+
+register_asset "stylesheets/common/top-replies.scss"
 
 after_initialize do
   TopicList.on_preload do |topics, topic_list|
