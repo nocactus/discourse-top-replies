@@ -84,9 +84,10 @@
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
-  margin: 0 0 0 0.75em;
+  margin: 0 0 0 0.667em;
   padding: 0 !important;
   font: inherit;
+  font-size: var(--font-down-1) !important;
   color: inherit;
   cursor: pointer;
   display: inline-flex;

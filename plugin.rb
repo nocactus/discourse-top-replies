@@ -2,7 +2,7 @@
 
 # name: discourse-top-replies
 # about: Shows the first 5 replies under each topic in the topic list
-# version: 0.4.4
+# version: 0.4.5
 # authors: Timo
 # url: https://github.com/nocactus/discourse-top-replies
 
