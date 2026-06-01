@@ -76,29 +76,45 @@ export default class TopReplies extends Component {
       btn.classList.toggle("is-liked", liked);
 
       try {
-        let resp;
-        if (wasLiked) {
-          resp = await fetch(
-            `/post_actions/${topic.first_post_id}?post_action_type_id=2&flag_topic=false`,
-            {
-              method: "DELETE",
-              headers: { "X-CSRF-Token": csrfToken },
-            }
-          );
-        } else {
-          resp = await fetch("/post_actions", {
-            method: "POST",
+        // discourse-reactions plugin: één toggle-endpoint voor like en unlike.
+        // Fallback naar core /post_actions als reactions niet geïnstalleerd is.
+        let resp = await fetch(
+          `/discourse-reactions/posts/${topic.first_post_id}/custom-reactions/heart/toggle.json`,
+          {
+            method: "PUT",
             headers: {
               "Content-Type": "application/json",
               "X-CSRF-Token": csrfToken,
             },
-            body: JSON.stringify({
-              id: topic.first_post_id,
-              post_action_type_id: 2,
-              flag_topic: false,
-            }),
-          });
+          }
+        );
+
+        if (resp.status === 404) {
+          // Reactions plugin niet aanwezig — gebruik core like API
+          if (wasLiked) {
+            resp = await fetch(
+              `/post_actions/${topic.first_post_id}?post_action_type_id=2&flag_topic=false`,
+              {
+                method: "DELETE",
+                headers: { "X-CSRF-Token": csrfToken },
+              }
+            );
+          } else {
+            resp = await fetch("/post_actions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": csrfToken,
+              },
+              body: JSON.stringify({
+                id: topic.first_post_id,
+                post_action_type_id: 2,
+                flag_topic: false,
+              }),
+            });
+          }
         }
+
         if (!resp.ok) {
           throw new Error();
         }
