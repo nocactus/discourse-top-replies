@@ -22,8 +22,10 @@
           -1px 0 0 var(--redditish-border-color),
            1px 0 0 var(--redditish-border-color),
            0 1px 0 var(--redditish-border-color);
-        border-radius: 0 0 0.25em 0.25em;
-        padding: 0 0.75em 0.75em !important;
+        border-radius: 0 0 0.5em 0.5em;
+        // top-padding compenseert de negatieve margin-top (-1em) zodat de
+        // eerste reply niet onder het bericht erboven schuift
+        padding: 1.5em 0.75em 0.75em !important;
       }
 
       // Hoge specificiteit voor alle kleur- en layout-overrides

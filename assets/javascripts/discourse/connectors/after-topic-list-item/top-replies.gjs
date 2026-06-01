@@ -47,10 +47,15 @@ export default class TopReplies extends Component {
     let liked = topic.first_post_user_liked || false;
     let count = topic.first_post_like_count || 0;
 
+    const heartSvg =
+      '<svg class="fa d-icon d-icon-heart svg-icon fa-width-auto svg-string" width="1em" height="1em" aria-hidden="true"><use href="#heart"></use></svg>';
+    const renderContent = (n) =>
+      `<span class="number">${n}</span> ${heartSvg}`;
+
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "top-replies-like-btn" + (liked ? " is-liked" : "");
-    btn.innerHTML = `${count} ♥`;
+    btn.innerHTML = renderContent(count);
 
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -67,7 +72,7 @@ export default class TopReplies extends Component {
 
       liked = !wasLiked;
       count = count + (wasLiked ? -1 : 1);
-      btn.innerHTML = `${count} ♥`;
+      btn.innerHTML = renderContent(count);
       btn.classList.toggle("is-liked", liked);
 
       try {
@@ -100,7 +105,7 @@ export default class TopReplies extends Component {
       } catch {
         liked = wasLiked;
         count = count + (wasLiked ? 1 : -1);
-        btn.innerHTML = `${count} ♥`;
+        btn.innerHTML = renderContent(count);
         btn.classList.toggle("is-liked", liked);
       }
     });
