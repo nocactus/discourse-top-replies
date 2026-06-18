@@ -2,7 +2,7 @@
 
 # name: discourse-top-replies
 # about: Shows the first 5 replies under each topic in the topic list
-# version: 0.5.1
+# version: 0.5.2
 # authors: Timo
 # url: https://github.com/nocactus/discourse-top-replies
 
@@ -90,10 +90,15 @@ after_initialize do
           tag.match(/\balt="([^"]+)"/)&.captures&.first.to_s
         end
       end
+      excerpt = PrettyText.excerpt(cooked, 200, strip_links: true, strip_images: true)
+      # HTML entities (&hellip;, &amp;, &#39;, …) decoderen — de template
+      # rendert excerpt als platte tekst, dus entities zouden anders letterlijk
+      # zichtbaar zijn.
+      excerpt = CGI.unescapeHTML(excerpt) if excerpt
       {
         post_number: post.post_number,
         like_count: post.like_count,
-        excerpt: PrettyText.excerpt(cooked, 200, strip_links: true, strip_images: true),
+        excerpt: excerpt,
         username: post.user&.username,
         name: post.user&.name,
         avatar_template: post.user&.avatar_template,
