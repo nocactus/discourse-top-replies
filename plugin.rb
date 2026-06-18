@@ -2,7 +2,7 @@
 
 # name: discourse-top-replies
 # about: Shows the first 5 replies under each topic in the topic list
-# version: 0.5.0
+# version: 0.5.1
 # authors: Timo
 # url: https://github.com/nocactus/discourse-top-replies
 
@@ -95,6 +95,7 @@ after_initialize do
         like_count: post.like_count,
         excerpt: PrettyText.excerpt(cooked, 200, strip_links: true, strip_images: true),
         username: post.user&.username,
+        name: post.user&.name,
         avatar_template: post.user&.avatar_template,
         reply_to_post_number: post.reply_to_post_number,
       }

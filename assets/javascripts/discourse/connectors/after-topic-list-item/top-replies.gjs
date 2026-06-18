@@ -173,7 +173,7 @@ export default class TopReplies extends Component {
                       style="color:var(--primary);text-decoration:none"
                     >
                       <span class="top-reply-username" style="color:var(--primary)">
-                        {{#if reply.reply_to_post_number}}↩ {{/if}}{{reply.username}}
+                        {{#if reply.reply_to_post_number}}↩ {{/if}}{{if reply.name reply.name reply.username}}
                       </span>
                       <span class="top-reply-excerpt" style="color:var(--primary-high)">{{reply.excerpt}}</span>
                     </a>
